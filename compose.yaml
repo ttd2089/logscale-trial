@@ -1,0 +1,28 @@
+services:
+
+  echo:
+    image: ealen/echo-server
+    ports:
+      - 8000:80
+
+  httpd:
+    image: httpd:2.4
+    ports:
+      - 8080:80
+    volumes:
+      - ./services/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro
+      - apache-logs:/var/log/apache:rw
+
+  logscale-collector:
+    build:
+      context: ./
+      dockerfile: ./services/logscale-collector/Dockerfile
+    environment:
+      - LOGSCALE_URL=${LOGSCALE_URL:-https://cloud.community.humio.com}
+      - LOGSCALE_INGEST_TOKEN=${LOGSCALE_INGEST_TOKEN}
+    volumes:
+      - ./services/logscale-collector/config.yaml:/etc/logscale-collector/config.yaml
+      - apache-logs:/var/log/apache:ro
+
+volumes:
+  apache-logs:

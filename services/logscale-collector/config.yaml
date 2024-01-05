@@ -1,0 +1,14 @@
+sources:
+  apache_logs:
+    sink: logscale
+    type: file
+    include: /var/log/apache/*.log
+    parser: accesslog
+
+sinks:
+  logscale:
+    tls:
+      insecure: true # TODO: Get the CA into the container
+    type: humio
+    url: $LOGSCALE_URL
+    token: $LOGSCALE_INGEST_TOKEN
